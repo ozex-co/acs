@@ -23,9 +23,18 @@ const Navbar = () => {
       isAdminLoggedIn, 
       hasUser: !!user, 
       hasAdmin: !!admin,
-      adminData: admin ? { id: admin.id, username: admin.username, isAdmin: admin.isAdmin, roles: admin.roles } : null
+      adminData: admin ? { id: admin.id, username: admin.username, isAdmin: admin.isAdmin, roles: admin.roles } : null,
+      path: location.pathname
     });
-  }, [isUserLoggedIn, isAdminLoggedIn, user, admin]);
+  }, [isUserLoggedIn, isAdminLoggedIn, user, admin, location.pathname]);
+  
+  // Check if we're on an admin page
+  const isAdminPage = location.pathname.startsWith('/admin');
+  
+  // Skip rendering navbar on admin pages (except login)
+  if (isAdminPage && location.pathname !== '/admin/login') {
+    return null;
+  }
   
   const handleLogout = () => {
     if (isAdmin) {
@@ -55,7 +64,7 @@ const Navbar = () => {
   }
   
   return (
-    <nav className="bg-white border-b border-border shadow-sm">
+    <nav className="bg-white border-b border-border shadow-sm text-text">
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Logo */}

@@ -242,56 +242,64 @@ const AdminUsersPage: React.FC = () => {
           </div>
           
           {/* Users Table */}
-          <div className="bg-bg-light rounded-lg shadow-md overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-700">
-                <thead className="bg-bg-dark">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Phone</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden md:table-cell">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Age</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden lg:table-cell">Joined</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Age</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Joined</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                
-                <tbody className="divide-y divide-gray-700">
-                  {filteredUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-6 text-center text-gray-400">
-                        {searchTerm ? 'No users match your search' : 'No users found'}
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredUsers.map(user => (
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user) => (
                       <tr 
                         key={user.id} 
                         id={`user-${user.id}`}
-                        className={`border-b border-gray-700 hover:bg-bg-dark cursor-pointer ${highlightedUserId && parseInt(highlightedUserId) === user.id ? 'bg-bg-dark' : ''}`}
-                        onClick={() => navigate(`/admin/users/${user.id}`)}
+                        className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                          highlightedUserId && Number(highlightedUserId) === user.id 
+                            ? 'bg-yellow-50 dark:bg-yellow-900/20' 
+                            : ''
+                        }`}
                       >
-                        <td className="py-3 px-2 text-white">{user.fullName}</td>
-                        <td className="py-3 px-2 text-gray-300">{user.phone || '-'}</td>
-                        <td className="py-3 px-2 text-gray-300 hidden md:table-cell">{user.email || '-'}</td>
-                        <td className="py-3 px-2 text-gray-300 hidden sm:table-cell">
-                          {user.dateOfBirth ? `${user.age || calculateAge(user.dateOfBirth)} سنة` : '-'}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">{user.fullName}</div>
                         </td>
-                        <td className="py-3 px-2 text-gray-300 hidden lg:table-cell">{user.createdAt ? formatDate(user.createdAt) : '-'}</td>
-                        <td className="py-3 px-2 text-right">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-700 dark:text-gray-300">{user.phone}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-700 dark:text-gray-300">{user.email || '-'}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-700 dark:text-gray-300">{user.age || '-'}</div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="text-sm text-gray-700 dark:text-gray-300">
+                            {user.createdAt ? formatDate(user.createdAt) : '-'}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              confirmDelete(user);
-                            }}
-                            className="text-red-500 hover:text-red-400 p-1"
-                            aria-label="Delete user"
+                            onClick={() => confirmDelete(user)}
+                            className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                           >
-                            <FiTrash2 />
+                            <FiTrash2 size={18} />
                           </button>
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        {searchTerm ? 'No users match your search.' : 'No users found.'}
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
@@ -300,38 +308,32 @@ const AdminUsersPage: React.FC = () => {
         </>
       )}
       
-      {/* Delete Confirmation Modal */}
+      {/* Confirm Delete Modal */}
       {isConfirmDeleteOpen && selectedUser && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={cancelDelete}></div>
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-bg-light p-6 rounded-lg shadow-xl max-w-md w-full">
-              <h3 className="text-xl font-bold text-white mb-4">Confirm Delete</h3>
-              <p className="text-gray-300 mb-6">
-                Are you sure you want to delete the user <span className="font-semibold text-white">{selectedUser.fullName}</span>? 
-                This action cannot be undone.
-              </p>
-              <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={isDeleting}
-                  onClick={cancelDelete}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="button"
-                  variant="danger"
-                  disabled={isDeleting}
-                  onClick={handleDeleteUser}
-                >
-                  Delete
-                </Button>
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Confirm Delete</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              Are you sure you want to delete user <span className="font-semibold">{selectedUser.fullName}</span>? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4 rtl:space-x-reverse">
+              <Button
+                variant="secondary"
+                onClick={cancelDelete}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleDeleteUser}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </AdminLayout>
   );

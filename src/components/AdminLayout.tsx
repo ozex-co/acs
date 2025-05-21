@@ -31,13 +31,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   
   // Check if admin is logged in and redirect if not
   useEffect(() => {
-    if (!isLoading && !isAdminLoggedIn) {
+    if (!isLoading && !isAdminLoggedIn && !location.pathname.includes('/admin/login')) {
       console.log('Admin not logged in, redirecting to admin login page');
       navigate('/admin/login', { replace: true });
     }
-  }, [isAdminLoggedIn, navigate, isLoading])
+  }, [isAdminLoggedIn, navigate, isLoading, location.pathname])
   
-  // Return loading state or null if not logged in
+  // Return loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-gray-900">
@@ -46,17 +46,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
     )
   }
   
-  if (!isAdminLoggedIn) {
+  // If not authenticated and not on login page, don't render anything
+  if (!isAdminLoggedIn && !location.pathname.includes('/admin/login')) {
     console.log('Admin not authenticated, not rendering AdminLayout');
-    return null
+    return null;
   }
   
-  // Check if the current path is an admin path
-  const isAdminPath = location.pathname.startsWith('/admin');
-  
-  // If not an admin path, don't render the layout
-  if (!isAdminPath) {
-    console.log('Not an admin path, not rendering AdminLayout');
+  // Skip admin layout on login page
+  if (location.pathname === '/admin/login') {
     return <>{children}</>;
   }
   
@@ -100,7 +97,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           className={`
             bg-white dark:bg-gray-800 w-full lg:w-64 border-r border-slate-200 dark:border-gray-700 
             lg:min-h-screen fixed lg:relative top-0 left-0 h-full z-40 lg:z-auto lg:flex
-            ${sidebarOpen ? 'block pt-16' : 'hidden'}
+            ${sidebarOpen ? 'block pt-16' : 'hidden lg:block'}
           `}
           aria-hidden={!sidebarOpen && window.innerWidth < 1024}
         >

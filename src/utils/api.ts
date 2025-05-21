@@ -1311,9 +1311,48 @@ export const adminApi = {
       if (search) params.append('search', search);
       
       // Make sure we're using the base URL with the API endpoint
-      const response = await apiClient.get(`${API_ROUTES.ADMIN_USERS}?${params.toString()}`);
-      return { data: extractApiData(response), error: null };
+      const response = await api.instance.get(`${API_ROUTES.ADMIN_USERS}?${params.toString()}`);
+      
+      // Log the raw response for debugging
+      console.log('Admin users API raw response:', response);
+      
+      // Extract users data from the response
+      let usersData = null;
+      
+      if (response.data && response.data.data && response.data.data.users) {
+        // Standard nested structure: response.data.data.users
+        usersData = { 
+          users: response.data.data.users,
+          total: response.data.data.total || response.data.data.users.length,
+          page: page,
+          limit: limit
+        };
+      } else if (response.data && response.data.users) {
+        // Alternate structure: response.data.users
+        usersData = {
+          users: response.data.users,
+          total: response.data.total || response.data.users.length,
+          page: page,
+          limit: limit
+        };
+      } else if (response.data && Array.isArray(response.data)) {
+        // Direct array in response.data
+        usersData = {
+          users: response.data,
+          total: response.data.length,
+          page: page,
+          limit: limit
+        };
+      } else {
+        // Fallback - use the whole response as data
+        usersData = response.data;
+      }
+      
+      console.log('Processed users data:', usersData);
+      
+      return { data: usersData, error: null };
     } catch (error) {
+      console.error('Error in getUsers API call:', error);
       return { 
         data: { 
           users: [],

@@ -80,15 +80,27 @@ const AdminUsersPage: React.FC = () => {
       // Use adminApi instead of direct axios calls
       const response = await adminApi.getUsers(currentPage, 10, searchQuery);
       
+      console.log('Users API response:', response);
+      
       if (response.error) {
         throw new Error(response.error);
       }
       
+      // Extract users array from the response
+      const usersData = response.data?.users || [];
+      
+      if (!Array.isArray(usersData)) {
+        console.error('Expected users array, got:', usersData);
+        throw new Error('Invalid response format');
+      }
+      
       // Calculate age for each user based on dateOfBirth
-      const usersWithAge = (response.data.users || []).map((user: any) => ({
+      const usersWithAge = usersData.map((user: any) => ({
         ...user,
         age: user.dateOfBirth ? calculateAge(user.dateOfBirth) : 0
       }));
+      
+      console.log('Processed users data:', usersWithAge);
       
       setUsers(usersWithAge);
       setFilteredUsers(usersWithAge);
@@ -174,8 +186,8 @@ const AdminUsersPage: React.FC = () => {
     <AdminLayout title="Users">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Users Management</h1>
-          <p className="text-gray-400 mt-1">View and manage system users</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Users Management</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">View and manage system users</p>
         </div>
         
         <Button 
@@ -197,13 +209,13 @@ const AdminUsersPage: React.FC = () => {
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search by name, phone, or email..."
-          className="w-full pl-10 pr-10 py-3 bg-bg-light border border-gray-700 rounded-lg text-white focus:outline-none focus:border-primary"
+          className="w-full pl-10 pr-10 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-primary"
         />
         
         {searchTerm && (
           <button
             onClick={() => setSearchTerm('')}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <FiX />
           </button>
@@ -230,12 +242,12 @@ const AdminUsersPage: React.FC = () => {
       ) : (
         <>
           {/* User Count */}
-          <div className="bg-bg-light p-4 rounded-lg mb-4">
-            <p className="text-gray-400">
-              Total users: <span className="text-white font-medium">{users.length}</span>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg mb-4">
+            <p className="text-gray-600 dark:text-gray-300">
+              Total users: <span className="text-gray-900 dark:text-white font-medium">{users.length}</span>
               {searchTerm && (
                 <span>
-                  , Filtered: <span className="text-white font-medium">{filteredUsers.length}</span>
+                  , Filtered: <span className="text-gray-900 dark:text-white font-medium">{filteredUsers.length}</span>
                 </span>
               )}
             </p>

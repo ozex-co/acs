@@ -1,10 +1,11 @@
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, lazy, Suspense, useState } from 'react';
 import { 
   BrowserRouter as Router, 
   Routes, 
   Route, 
   Navigate,
-  createRoutesFromElements
+  createRoutesFromElements,
+  useNavigate
 } from 'react-router-dom';
 import { 
   createBrowserRouter,
@@ -53,24 +54,66 @@ import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Lazy load admin pages
-const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage'));
-const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
-const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
-const AdminExamsPage = lazy(() => import('./pages/AdminExamsPage'));
-const AdminCreateExamPage = lazy(() => import('./pages/AdminCreateExamPage'));
-const AdminEditExamPage = lazy(() => import('./pages/AdminEditExamPage'));
-const AdminStatsPage = lazy(() => import('./pages/AdminStatsPage'));
-const AdminSectionsPage = lazy(() => import('./pages/AdminSectionsPage'));
+// Import AdminLoginPage normally instead of lazy loading it
+import AdminLoginPage from './pages/AdminLoginPage';
+
+// Lazy load admin pages with better error handling
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage').catch(err => {
+  console.error('Failed to load AdminDashboardPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage').catch(err => {
+  console.error('Failed to load AdminUsersPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminExamsPage = lazy(() => import('./pages/AdminExamsPage').catch(err => {
+  console.error('Failed to load AdminExamsPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminCreateExamPage = lazy(() => import('./pages/AdminCreateExamPage').catch(err => {
+  console.error('Failed to load AdminCreateExamPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminEditExamPage = lazy(() => import('./pages/AdminEditExamPage').catch(err => {
+  console.error('Failed to load AdminEditExamPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminStatsPage = lazy(() => import('./pages/AdminStatsPage').catch(err => {
+  console.error('Failed to load AdminStatsPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
+const AdminSectionsPage = lazy(() => import('./pages/AdminSectionsPage').catch(err => {
+  console.error('Failed to load AdminSectionsPage:', err);
+  return { default: () => <div>Failed to load component</div> };
+}));
 
 // Utils
 import { STORAGE } from './utils/constants';
 import { examApi, fetchCsrfToken, API_FEATURES } from './utils/api';
 import axios from 'axios';
 
-// Simple fallback component for lazy loading
-function LoadingFallback() {
-  return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>;
+// Function to attempt loading admin pages in advance to prevent fetch errors
+const preloadAdminPages = () => {
+  // Start preloading the admin pages
+  void import('./pages/AdminDashboardPage');
+  void import('./pages/AdminUsersPage');
+  void import('./pages/AdminExamsPage');
+  void import('./pages/AdminCreateExamPage');
+  void import('./pages/AdminEditExamPage');
+  void import('./pages/AdminStatsPage');
+  void import('./pages/AdminSectionsPage');
+};
+
+// Better loading fallback
+function LoadingFallback(): React.ReactNode {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em]"></div>
+        <p className="mt-4 text-gray-600">Loading page...</p>
+      </div>
+    </div>
+  );
 }
 
 // Set the document title
@@ -136,6 +179,115 @@ const syncPendingSubmissions = async () => {
   }
 };
 
+// Custom class-based error boundary component (React doesn't have hooks-based error boundaries)
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+class CustomErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error("Admin component loading error:", error, errorInfo);
+  }
+  
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div className="text-center p-4">
+          <h2 className="text-xl font-bold text-red-500 mb-2">Something went wrong</h2>
+          <p className="mb-4">{this.state.error?.message || 'Failed to load the page component'}</p>
+          <button 
+            onClick={() => {
+              this.setState({ hasError: false, error: null });
+              window.location.href = '/admin/login'; // Simple redirect as fallback
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Go to admin login
+          </button>
+        </div>
+      );
+    }
+    
+    return this.props.children;
+  }
+}
+
+// Updated AdminContent function with useNavigate hook
+function AdminContent() {
+  return (
+    <CustomErrorBoundary>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          {/* Admin login is now eagerly loaded, not lazy loaded */}
+          <Route path="/login" element={<AdminLoginPage />} />
+          
+          <Route path="/dashboard" element={
+            <ProtectedRoute adminOnly>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/users" element={
+            <ProtectedRoute adminOnly>
+              <AdminUsersPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/exams" element={
+            <ProtectedRoute adminOnly>
+              <AdminExamsPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/exams/create" element={
+            <ProtectedRoute adminOnly>
+              <AdminCreateExamPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/exams/edit/:examId" element={
+            <ProtectedRoute adminOnly>
+              <AdminEditExamPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/stats" element={
+            <ProtectedRoute adminOnly>
+              <AdminStatsPage />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/sections" element={
+            <ProtectedRoute adminOnly>
+              <AdminSectionsPage />
+            </ProtectedRoute>
+          } />
+          
+          {/* Optional: Redirect base /admin to /admin/dashboard or handle differently */}
+          <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
+          
+          {/* Catch-all for non-matched admin routes - could render admin-specific 404 */}
+          <Route path="*" element={<NotFoundPage />} /> 
+        </Routes>
+      </Suspense>
+    </CustomErrorBoundary>
+  );
+}
+
 function AppContent() {
   // Initialize AOS just once in the app lifecycle
   useAOS({
@@ -144,6 +296,12 @@ function AppContent() {
     easing: 'ease-out-cubic',
     offset: 80
   });
+  
+  // Use effect to preload admin components
+  useEffect(() => {
+    // Preload admin pages when component mounts to prevent fetch errors
+    preloadAdminPages();
+  }, []);
   
   // Make app-wide modifications
   useEffect(() => {
@@ -241,63 +399,11 @@ function AppContent() {
         </ProtectedRoute>
       } />
       
-      {/* Wrap Admin routes (including login) in Suspense */}
+      {/* Wrap Admin routes (including login) in Suspense with proper error handling */}
       <Route
         path="/admin/*" // Match all routes starting with /admin
         element={
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes> {/* Nested Routes for admin section */}
-              <Route path="/login" element={<AdminLoginPage />} />
-              
-              <Route path="/dashboard" element={
-        <ProtectedRoute adminOnly>
-          <AdminDashboardPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/users" element={
-        <ProtectedRoute adminOnly>
-          <AdminUsersPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/exams" element={
-        <ProtectedRoute adminOnly>
-          <AdminExamsPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/exams/create" element={
-        <ProtectedRoute adminOnly>
-          <AdminCreateExamPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/exams/edit/:examId" element={
-        <ProtectedRoute adminOnly>
-          <AdminEditExamPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/stats" element={
-        <ProtectedRoute adminOnly>
-          <AdminStatsPage />
-        </ProtectedRoute>
-      } />
-      
-              <Route path="/sections" element={
-        <ProtectedRoute adminOnly>
-          <AdminSectionsPage />
-        </ProtectedRoute>
-      } />
-      
-              {/* Optional: Redirect base /admin to /admin/dashboard or handle differently */}
-              <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
-              
-              {/* Catch-all for non-matched admin routes - could render admin-specific 404 */}
-              <Route path="*" element={<NotFoundPage />} /> 
-            </Routes>
-          </Suspense>
+          <AdminContent />
         }
       />
       

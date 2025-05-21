@@ -12,9 +12,9 @@ export const APP_CONFIG = {
   // Theme settings
   THEME: {
     // Colors with better contrast for dark mode
-    DARK_TEXT_PRIMARY: 'text-white',
-    DARK_TEXT_SECONDARY: 'text-slate-200', 
-    DARK_TEXT_MUTED: 'text-slate-400',
+    DARK_TEXT_PRIMARY: 'text-slate-900',
+    DARK_TEXT_SECONDARY: 'text-slate-800', 
+    DARK_TEXT_MUTED: 'text-slate-600',
     
     // Background colors
     DARK_BG_PRIMARY: 'bg-slate-900',

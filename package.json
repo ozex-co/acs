@@ -28,6 +28,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@julr/unocss-preset-forms": "^1.0.0",
     "@types/aos": "^3.0.7",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
@@ -41,7 +42,6 @@
     "unocss": "^0.58.9",
     "unocss-preset-animations": "^1.2.1",
     "vite": "^4.4.5",
-    "vite-plugin-pwa": "^1.0.0",
-    "@unocss/preset-forms": "^0.58.9"
+    "vite-plugin-pwa": "^1.0.0"
   }
 }

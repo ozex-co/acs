@@ -1,7 +1,7 @@
 import { defineConfig } from 'unocss';
 import presetAttributify from '@unocss/preset-attributify';
 import presetIcons from '@unocss/preset-icons';
-import presetForms from '@unocss/preset-forms';
+import { presetForms } from '@julr/unocss-preset-forms';
 import presetUno from '@unocss/preset-uno';
 import presetAnimations from 'unocss-preset-animations';
 

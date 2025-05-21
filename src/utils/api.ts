@@ -61,10 +61,10 @@ export const API_ROUTES = {
 
 // Feature flags
 export const API_FEATURES = {
-  // Enable CSRF protection
-  CSRF_ENABLED: true, 
-  // Don't assume CSRF endpoint is missing until we've confirmed it
-  CSRF_ENDPOINT_MISSING: false,
+  // Disable CSRF protection
+  CSRF_ENABLED: false, 
+  // Mark the CSRF endpoint as missing to skip token fetching
+  CSRF_ENDPOINT_MISSING: true,
   // Refresh token endpoints are not available
   REFRESH_TOKEN_AVAILABLE: false
 };
@@ -112,8 +112,9 @@ export const createApiClient = (options: AxiosRequestConfig = {}): AxiosInstance
     baseURL: API_ROUTES.BASE_URL,
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
     },
-    withCredentials: true, // Required for cookies
+    withCredentials: false, // Disabled for cross-domain calls
     ...options,
   });
 
@@ -455,7 +456,11 @@ export const fetchCsrfToken = async (): Promise<string | null> => {
   }
   
   try {
-    const response = await apiClient.get(API_ROUTES.CSRF_TOKEN);
+    // Use direct axios call without credentials
+    const response = await axios.get(`${API_ROUTES.BASE_URL}${API_ROUTES.CSRF_TOKEN}`, {
+      withCredentials: false
+    });
+    
     // Extract CSRF token from different possible response formats
     const csrfToken = response.data?.csrfToken || 
                      (response.data?.data && response.data.data.csrfToken) || 

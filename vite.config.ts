@@ -15,7 +15,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+            urlPattern: ({ url }) => url.origin === 'https://acs-backend-2bvr.onrender.com',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',

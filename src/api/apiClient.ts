@@ -17,7 +17,7 @@ const STORAGE_KEYS = {
 /**
  * Base URL for the API from environment variables
  */
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://acs-backend-2bvr.onrender.com';
 
 /**
  * Core API client for making requests to the backend

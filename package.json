@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@julr/unocss-preset-forms": "^1.0.0",
     "@tanstack/react-query": "^5.75.4",
     "aos": "^2.3.4",
     "axios": "^1.6.0",
@@ -42,6 +41,7 @@
     "unocss": "^0.58.9",
     "unocss-preset-animations": "^1.2.1",
     "vite": "^4.4.5",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "@unocss/preset-forms": "^0.58.9"
   }
 }

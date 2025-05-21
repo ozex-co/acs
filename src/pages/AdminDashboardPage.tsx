@@ -4,6 +4,9 @@ import Navbar from '../components/Navbar'
 import { FaUsers, FaFileAlt, FaChartLine, FaUserClock, FaChartBar } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
+import { API_ROUTES } from '../utils/api'
+import { STORAGE } from '../utils/constants'
+import axios from 'axios'
 
 interface StatsData {
   counts: {
@@ -44,10 +47,37 @@ const AdminDashboardPage: React.FC = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/admin/stats')
-        const data = await response.json()
-        if (data.success) {
-          setStats(data.data)
+        // Get the admin token from localStorage
+        const adminDataRaw = localStorage.getItem(STORAGE.ADMIN_DATA);
+        let token = '';
+        
+        if (adminDataRaw) {
+          try {
+            const adminData = JSON.parse(adminDataRaw);
+            token = adminData.token || '';
+          } catch (error) {
+            console.error('Failed to parse admin data:', error);
+          }
+        }
+
+        // Use the full API URL with the admin stats endpoint
+        const response = await axios.get(`${API_ROUTES.BASE_URL}${API_ROUTES.ADMIN_STATS}`, {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('Stats API response:', response.data);
+        
+        if (response.data) {
+          // Check for different response formats
+          if (response.data.success) {
+            setStats(response.data.data);
+          } else {
+            // If the API doesn't wrap the response in a data property
+            setStats(response.data);
+          }
         }
       } catch (error) {
         console.error('Error fetching stats:', error)

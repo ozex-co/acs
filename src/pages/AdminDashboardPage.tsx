@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar'
 import { FaUsers, FaFileAlt, FaChartLine, FaUserClock, FaChartBar } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
-import { api } from '../utils/api'
+import { api, debugApiResponse } from '../utils/api'
 import { STORAGE } from '../utils/constants'
 
 interface StatsData {
@@ -42,25 +42,63 @@ const AdminDashboardPage: React.FC = () => {
   const { isLoading: isAuthLoading } = useAuth()
   const [stats, setStats] = useState<StatsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Use our consistent API client to make the request
-        const statsData = await api.get('/admin/stats');
-        console.log('Stats API response:', statsData);
-        
-        // Set the stats data
-        setStats(statsData);
-      } catch (error) {
-        console.error('Error fetching stats:', error)
-      } finally {
-        setIsLoading(false)
+  const fetchStats = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      // Use our consistent API client to make the request
+      const response = await api.instance.get('/admin/stats');
+      debugApiResponse('/admin/stats', response);
+      
+      // Extract data from response
+      let statsData;
+      if (response.data && response.data.data) {
+        // Standard API response format
+        statsData = response.data.data;
+      } else if (response.data) {
+        // Direct data in response
+        statsData = response.data;
+      } else {
+        throw new Error('Invalid response structure');
       }
+      
+      console.log('Stats data:', statsData);
+      
+      // Validate the stats data structure
+      if (!statsData || 
+          !statsData.counts || 
+          !statsData.performance || 
+          !statsData.userActivity || 
+          !statsData.ageDistribution || 
+          !statsData.topExams) {
+        console.error('Invalid stats data structure:', statsData);
+        setError('بيانات غير صالحة من الخادم');
+        return;
+      }
+      
+      // Set the stats data
+      setStats(statsData);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      setError('حدث خطأ في تحميل البيانات');
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  // Load data on component mount
+  useEffect(() => {
     fetchStats()
   }, [])
+
+  // Handle retry button click
+  const handleRetry = () => {
+    fetchStats();
+  }
 
   if (isAuthLoading || isLoading) {
     return (
@@ -73,12 +111,21 @@ const AdminDashboardPage: React.FC = () => {
     )
   }
 
-  if (!stats) {
+  if (error || !stats) {
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-error">حدث خطأ في تحميل البيانات</div>
+          <div className="text-center text-error">{error || 'حدث خطأ في تحميل البيانات'}</div>
+          <div className="flex justify-center mt-4">
+            <button 
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/80"
+              onClick={handleRetry}
+              disabled={isLoading}
+            >
+              {isLoading ? 'جاري المحاولة...' : 'إعادة المحاولة'}
+            </button>
+          </div>
         </div>
       </div>
     )

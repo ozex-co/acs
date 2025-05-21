@@ -1690,8 +1690,33 @@ export const api = (() => {
      * Make a GET request to the API
      */
     async get<T = any>(url: string, params?: Record<string, any>): Promise<T> {
-      const response = await axiosInstance.get<ApiResponse<T>>(url, { params });
-      return response.data.data;
+      try {
+        const response = await axiosInstance.get<ApiResponse<T>>(url, { params });
+        
+        // Validate response structure
+        if (!response || !response.data) {
+          console.error('Invalid API response structure (empty response):', response);
+          throw new Error('Invalid API response structure: empty response');
+        }
+        
+        // Check if response follows our expected format
+        if (typeof response.data.success === 'boolean' && response.data.success === false) {
+          console.error('API returned error response:', response.data);
+          throw new Error(response.data.message || 'API returned error status');
+        }
+        
+        // Handle case where data is directly in response.data (not nested in data.data)
+        if (response.data.data === undefined && Object.keys(response.data).length > 0) {
+          console.warn('API response does not follow standard structure, using direct data:', response.data);
+          return response.data as T;
+        }
+        
+        // Return the data field from the response
+        return response.data.data;
+      } catch (error) {
+        console.error(`API GET request failed for ${url}:`, error);
+        throw error;
+      }
     },
     
     /**
@@ -1724,3 +1749,33 @@ export const api = (() => {
     instance: axiosInstance
   };
 })();
+
+/**
+ * Debug utility for API responses
+ */
+export const debugApiResponse = (endpoint: string, response: any, error?: any): void => {
+  // Only log in development environment
+  if (process.env.NODE_ENV !== 'production') {
+    console.group(`API Debug: ${endpoint}`);
+    if (error) {
+      console.error('Error:', error);
+    }
+    console.log('Response:', response);
+    
+    // Try to identify common response structure issues
+    if (response) {
+      if (response.data === undefined) {
+        console.warn('Warning: Response missing .data property');
+      } else if (typeof response.data === 'object' && response.data !== null) {
+        if (response.data.data === undefined) {
+          console.warn('Warning: Response.data missing .data property');
+        }
+        if (response.data.success === undefined) {
+          console.warn('Warning: Response.data missing .success property');
+        }
+      }
+    }
+    
+    console.groupEnd();
+  }
+};

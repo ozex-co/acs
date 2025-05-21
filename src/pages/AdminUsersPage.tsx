@@ -86,12 +86,36 @@ const AdminUsersPage: React.FC = () => {
         throw new Error(response.error);
       }
       
-      // Extract users array from the response
-      const usersData = response.data?.users || [];
+      // Extract users array from the response - handle various possible structures
+      let usersData;
+      
+      if (response.data?.users && Array.isArray(response.data.users)) {
+        // Standard structure with users array in response.data.users
+        usersData = response.data.users;
+      } else if (response.data?.data?.users && Array.isArray(response.data.data.users)) {
+        // Nested structure with users array in response.data.data.users
+        usersData = response.data.data.users;
+      } else if (Array.isArray(response.data)) {
+        // Direct array in response.data
+        usersData = response.data;
+      } else if (typeof response.data === 'object' && response.data !== null) {
+        // Try to find any array property that might contain users
+        const possibleUserArrays = Object.values(response.data).filter(val => Array.isArray(val));
+        if (possibleUserArrays.length > 0) {
+          // Use the first array found
+          usersData = possibleUserArrays[0];
+        } else {
+          usersData = [];
+        }
+      } else {
+        usersData = [];
+      }
+      
+      console.log('Extracted users data:', usersData);
       
       if (!Array.isArray(usersData)) {
         console.error('Expected users array, got:', usersData);
-        throw new Error('Invalid response format');
+        usersData = []; // Fallback to empty array to prevent errors
       }
       
       // Calculate age for each user based on dateOfBirth

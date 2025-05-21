@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   BrowserRouter as Router, 
   Routes, 
@@ -54,55 +54,20 @@ import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Import AdminLoginPage normally instead of lazy loading it
+// Import all admin pages eagerly instead of using lazy loading
 import AdminLoginPage from './pages/AdminLoginPage';
-
-// Lazy load admin pages with better error handling
-const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage').catch(err => {
-  console.error('Failed to load AdminDashboardPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage').catch(err => {
-  console.error('Failed to load AdminUsersPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminExamsPage = lazy(() => import('./pages/AdminExamsPage').catch(err => {
-  console.error('Failed to load AdminExamsPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminCreateExamPage = lazy(() => import('./pages/AdminCreateExamPage').catch(err => {
-  console.error('Failed to load AdminCreateExamPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminEditExamPage = lazy(() => import('./pages/AdminEditExamPage').catch(err => {
-  console.error('Failed to load AdminEditExamPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminStatsPage = lazy(() => import('./pages/AdminStatsPage').catch(err => {
-  console.error('Failed to load AdminStatsPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
-const AdminSectionsPage = lazy(() => import('./pages/AdminSectionsPage').catch(err => {
-  console.error('Failed to load AdminSectionsPage:', err);
-  return { default: () => <div>Failed to load component</div> };
-}));
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminExamsPage from './pages/AdminExamsPage';
+import AdminCreateExamPage from './pages/AdminCreateExamPage';
+import AdminEditExamPage from './pages/AdminEditExamPage';
+import AdminStatsPage from './pages/AdminStatsPage';
+import AdminSectionsPage from './pages/AdminSectionsPage';
 
 // Utils
 import { STORAGE } from './utils/constants';
 import { examApi, fetchCsrfToken, API_FEATURES } from './utils/api';
 import axios from 'axios';
-
-// Function to attempt loading admin pages in advance to prevent fetch errors
-const preloadAdminPages = () => {
-  // Start preloading the admin pages
-  void import('./pages/AdminDashboardPage');
-  void import('./pages/AdminUsersPage');
-  void import('./pages/AdminExamsPage');
-  void import('./pages/AdminCreateExamPage');
-  void import('./pages/AdminEditExamPage');
-  void import('./pages/AdminStatsPage');
-  void import('./pages/AdminSectionsPage');
-};
 
 // Better loading fallback
 function LoadingFallback(): React.ReactNode {
@@ -115,9 +80,6 @@ function LoadingFallback(): React.ReactNode {
     </div>
   );
 }
-
-// Set the document title
-document.title = 'ACS - نظام الاختبارات التعليمي';
 
 // Function to attempt syncing pending submissions
 const syncPendingSubmissions = async () => {
@@ -151,7 +113,7 @@ const syncPendingSubmissions = async () => {
       }
 
       console.log(`Syncing submission for exam ${submission.examId}...`);
-      const response = await examApi.submitExam(submission.examId, submission.payload);
+      const response = await examApi.submitExam(submission.examId, submission.payload, 0);
       
       if (response.error) {
         // Handle specific errors? e.g., 401 Unauthorized might mean user logged out
@@ -226,64 +188,62 @@ class CustomErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
   }
 }
 
-// Updated AdminContent function with useNavigate hook
+// Updated AdminContent function for admin routes
 function AdminContent() {
   return (
     <CustomErrorBoundary>
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          {/* Admin login is now eagerly loaded, not lazy loaded */}
-          <Route path="/login" element={<AdminLoginPage />} />
-          
-          <Route path="/dashboard" element={
-            <ProtectedRoute adminOnly>
-              <AdminDashboardPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/users" element={
-            <ProtectedRoute adminOnly>
-              <AdminUsersPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/exams" element={
-            <ProtectedRoute adminOnly>
-              <AdminExamsPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/exams/create" element={
-            <ProtectedRoute adminOnly>
-              <AdminCreateExamPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/exams/edit/:examId" element={
-            <ProtectedRoute adminOnly>
-              <AdminEditExamPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/stats" element={
-            <ProtectedRoute adminOnly>
-              <AdminStatsPage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/sections" element={
-            <ProtectedRoute adminOnly>
-              <AdminSectionsPage />
-            </ProtectedRoute>
-          } />
-          
-          {/* Optional: Redirect base /admin to /admin/dashboard or handle differently */}
-          <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
-          
-          {/* Catch-all for non-matched admin routes - could render admin-specific 404 */}
-          <Route path="*" element={<NotFoundPage />} /> 
-        </Routes>
-      </Suspense>
+      <Routes>
+        {/* Admin routes */}
+        <Route path="/login" element={<AdminLoginPage />} />
+        
+        <Route path="/dashboard" element={
+          <ProtectedRoute adminOnly>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/users" element={
+          <ProtectedRoute adminOnly>
+            <AdminUsersPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/exams" element={
+          <ProtectedRoute adminOnly>
+            <AdminExamsPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/exams/create" element={
+          <ProtectedRoute adminOnly>
+            <AdminCreateExamPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/exams/edit/:examId" element={
+          <ProtectedRoute adminOnly>
+            <AdminEditExamPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/stats" element={
+          <ProtectedRoute adminOnly>
+            <AdminStatsPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/sections" element={
+          <ProtectedRoute adminOnly>
+            <AdminSectionsPage />
+          </ProtectedRoute>
+        } />
+        
+        {/* Optional: Redirect base /admin to /admin/dashboard or handle differently */}
+        <Route index element={<Navigate to="/admin/dashboard" replace />} /> 
+        
+        {/* Catch-all for non-matched admin routes - could render admin-specific 404 */}
+        <Route path="*" element={<NotFoundPage />} /> 
+      </Routes>
     </CustomErrorBoundary>
   );
 }
@@ -296,12 +256,6 @@ function AppContent() {
     easing: 'ease-out-cubic',
     offset: 80
   });
-  
-  // Use effect to preload admin components
-  useEffect(() => {
-    // Preload admin pages when component mounts to prevent fetch errors
-    preloadAdminPages();
-  }, []);
   
   // Make app-wide modifications
   useEffect(() => {
@@ -435,5 +389,8 @@ function App() {
     </Router>
   );
 }
+
+// Set the document title
+document.title = 'ACS - نظام الاختبارات التعليمي';
 
 export default App;

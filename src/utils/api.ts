@@ -631,11 +631,6 @@ export const extractApiData = <T>(responseData: any, path?: string): T | null =>
 };
 
 /**
- * Standard handler for API responses with proper typing
- */
-type ApiHandlerResponse<T> = { data: T | null; error: string | null };
-
-/**
  * Extract user token from various response formats
  * @param responseData API response data
  * @returns Token string or undefined if not found
@@ -796,6 +791,11 @@ export const extractSpecificData = <T>(data: any, key: string): T | null => {
   
   return null;
 };
+
+/**
+ * Standard handler for API responses with proper typing
+ */
+type ApiHandlerResponse<T> = { data: T | null; error: string | null };
 
 /**
  * API service implementations
@@ -1629,3 +1629,134 @@ export const handleStandardizedResponse = (
     data: response
   };
 };
+
+/**
+ * Create a standardized API client instance with proper error handling
+ * This is the recommended way to make API requests throughout the application
+ */
+export const api = (() => {
+  // Create a base client with the correct backend URL
+  const axiosInstance = axios.create({
+    baseURL: API_ROUTES.BASE_URL, // This is already set to 'https://acs-backend-2bvr.onrender.com/api'
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    withCredentials: true, // Enable credentials for authentication
+    timeout: 30000, // 30 second timeout
+  });
+
+  // Add request interceptor for auth token
+  axiosInstance.interceptors.request.use((config) => {
+    // Determine if request is for admin routes
+    const isAdminRoute = config.url?.includes('/admin');
+    
+    // Get auth data from appropriate storage
+    const authData = localStorage.getItem(isAdminRoute ? STORAGE.ADMIN_DATA : STORAGE.USER_DATA);
+    
+    if (authData) {
+      try {
+        const parsedData = JSON.parse(authData);
+        if (parsedData.token) {
+          config.headers.Authorization = `Bearer ${parsedData.token}`;
+        }
+      } catch (error) {
+        console.error('Failed to parse auth data:', error);
+      }
+    }
+    
+    return config;
+  });
+
+  // Add response interceptor for standardized error handling
+  axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      // Handle API errors consistently
+      if (error.response) {
+        // Format field errors if present
+        const fieldErrors = error.response.data?.fieldErrors || {};
+        
+        // Log the error with context
+        console.error(
+          `API Error (${error.response.status}): ${error.response.data?.message || error.message}`, 
+          { url: error.config?.url, data: error.response.data }
+        );
+        
+        // Handle unauthorized errors (expired token, etc.)
+        if (error.response.status === 401) {
+          // Clear auth data to force re-login
+          localStorage.removeItem(STORAGE.USER_DATA);
+          localStorage.removeItem(STORAGE.ADMIN_DATA);
+          
+          // Redirect to login
+          if (window.location.pathname.includes('/admin')) {
+            window.location.href = '/admin/login';
+          } else {
+            window.location.href = '/login';
+          }
+        }
+        
+        // Display user-friendly error notifications
+        displayErrorNotification(error.response.data?.message || 'An error occurred', fieldErrors);
+      } else if (error.request) {
+        // Network error - request made but no response
+        console.error('Network Error: No response received from server', error.request);
+        displayErrorNotification('Network Error: Could not connect to the server. Please check your internet connection.');
+      } else {
+        // Request setup error
+        console.error('Request Error:', error.message);
+        displayErrorNotification('An unexpected error occurred. Please try again.');
+      }
+      
+      // Continue throwing the error for components to handle
+      return Promise.reject({
+        message: error.response?.data?.message || error.message || 'An unexpected error occurred',
+        status: error.response?.status,
+        fieldErrors: error.response?.data?.fieldErrors || {},
+        details: error.response?.data?.details || {},
+        originalError: error
+      });
+    }
+  );
+  
+  // Return wrapped functions
+  return {
+    /**
+     * Make a GET request to the API
+     */
+    async get<T = any>(url: string, params?: Record<string, any>): Promise<T> {
+      const response = await axiosInstance.get<ApiResponse<T>>(url, { params });
+      return response.data.data;
+    },
+    
+    /**
+     * Make a POST request to the API
+     */
+    async post<T = any>(url: string, data?: any): Promise<T> {
+      const response = await axiosInstance.post<ApiResponse<T>>(url, data);
+      return response.data.data;
+    },
+    
+    /**
+     * Make a PUT request to the API
+     */
+    async put<T = any>(url: string, data?: any): Promise<T> {
+      const response = await axiosInstance.put<ApiResponse<T>>(url, data);
+      return response.data.data;
+    },
+    
+    /**
+     * Make a DELETE request to the API
+     */
+    async delete<T = any>(url: string): Promise<T> {
+      const response = await axiosInstance.delete<ApiResponse<T>>(url);
+      return response.data.data;
+    },
+    
+    /**
+     * Access the underlying axios instance (for advanced usage)
+     */
+    instance: axiosInstance
+  };
+})();

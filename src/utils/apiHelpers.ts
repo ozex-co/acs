@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { API, STORAGE } from './constants';
 
 /**
@@ -21,13 +21,15 @@ export const makeAuthRequest = async (
       token = parsed.token || '';
     }
     
-    // Ensure endpoint starts with /api/
-    const apiEndpoint = endpoint.startsWith('/api/') 
-      ? endpoint 
-      : `/api/${endpoint}`;
+    // Ensure endpoint is properly formatted - remove leading /api/ if present
+    const apiPath = endpoint.startsWith('/api/') 
+      ? endpoint.substring(5) // Remove the '/api/' prefix
+      : endpoint.startsWith('/') 
+        ? endpoint.substring(1) // Remove just the leading slash
+        : endpoint; 
     
-    // Build URL
-    const url = `${API.BASE_URL}${apiEndpoint}`;
+    // Build full URL with proper base URL
+    const url = `${API.BASE_URL}/api/${apiPath}`;
     
     // Common config
     const config = {
@@ -54,18 +56,19 @@ export const makeAuthRequest = async (
       data: response.data, 
       error: null 
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Error in ${method.toUpperCase()} request to ${endpoint}:`, error);
     
     // Log detailed error info
-    if (error.response) {
-      console.error(`Response status: ${error.response.status} (${error.response.statusText})`);
-      console.error('Response data:', error.response.data);
+    const axiosError = error as AxiosError<any>;
+    if (axiosError.response) {
+      console.error(`Response status: ${axiosError.response.status} (${axiosError.response.statusText})`);
+      console.error('Response data:', axiosError.response.data);
       
       // Handle validation errors specifically
-      if (error.response.status === 400 || error.response.status === 500) {
-        if (error.response.data.fieldErrors) {
-          const fieldErrors = error.response.data.fieldErrors;
+      if (axiosError.response.status === 400 || axiosError.response.status === 500) {
+        if (axiosError.response.data.fieldErrors) {
+          const fieldErrors = axiosError.response.data.fieldErrors;
           console.error('Field validation errors:', fieldErrors);
           
           // Construct a more readable error message
@@ -82,12 +85,12 @@ export const makeAuthRequest = async (
         }
         
         // Handle backend validation errors that use the 'details' format
-        if (error.response.data.details && Array.isArray(error.response.data.details)) {
-          console.error('Validation details:', error.response.data.details);
-          console.log('Full validation error response:', JSON.stringify(error.response.data, null, 2));
+        if (axiosError.response.data.details && Array.isArray(axiosError.response.data.details)) {
+          console.error('Validation details:', axiosError.response.data.details);
+          console.log('Full validation error response:', JSON.stringify(axiosError.response.data, null, 2));
           
           // Log each detail for debugging
-          error.response.data.details.forEach((detail: any, index: number) => {
+          axiosError.response.data.details.forEach((detail: any, index: number) => {
             console.log(`Detail ${index}:`, detail);
             if (detail.field) {
               console.log(`Field: ${detail.field}, Message: ${detail.message}`);
@@ -96,7 +99,7 @@ export const makeAuthRequest = async (
           
           // Convert the details array into a fieldErrors object
           const fieldErrors: Record<string, string> = {};
-          error.response.data.details.forEach((detail: any) => {
+          axiosError.response.data.details.forEach((detail: any) => {
             if (detail.field) {
               fieldErrors[detail.field] = detail.message || 'Validation error';
             }
@@ -110,36 +113,36 @@ export const makeAuthRequest = async (
           
           return {
             data: null,
-            error: error.response.data.message || 'Validation failed',
+            error: axiosError.response.data.message || 'Validation failed',
             fieldErrors: fieldErrors,
-            details: error.response.data.details
+            details: axiosError.response.data.details
           };
         }
       }
       
       // Handle specific HTTP errors
-      if (error.response.status === 404) {
+      if (axiosError.response.status === 404) {
         console.error(`Endpoint not found: ${endpoint} - Please check if the API route exists on the server`);
         return {
           data: null,
           error: `API endpoint not found (404): ${endpoint}. The requested resource may have been moved or removed.`
         };
       }
-    } else if (error.request) {
+    } else if (axiosError.request) {
       // The request was made but no response was received
       console.error('No response received from server. Network issue or server down.');
     } else {
       // Something happened in setting up the request
-      console.error('Error setting up request:', error.message);
+      console.error('Error setting up request:', axiosError.message);
     }
     
-    const errorMessage = error.response?.data?.message || 
-                        `Request failed: ${error.message || 'Unknown error'}`;
+    const errorMessage = axiosError.response?.data?.message || 
+                        `Request failed: ${axiosError.message || 'Unknown error'}`;
     
     return { 
       data: null, 
       error: errorMessage,
-      statusCode: error.response?.status
+      statusCode: axiosError.response?.status
     };
   }
 };

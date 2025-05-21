@@ -8,7 +8,7 @@ import { useLoading } from '../context/LoadingContext'
 import { useError } from '../context/ErrorContext'
 import DataFetchWrapper from '../components/DataFetchWrapper'
 import { useAuth } from '../context/AuthContext'
-import { examApi, resultsApi } from '../utils/api'
+import { examApi, resultsApi, api } from '../utils/api'
 import { ExamSummary } from '../types/api'
 
 // Use API type + add completed status
@@ -74,12 +74,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchSections = async () => {
       try {
-        const response = await fetch('/api/sections');
-        const data = await response.json();
-        
-        if (data.sections) {
-          setSections(data.sections);
-        }
+        const sectionsData = await api.get<{sections: Section[]}>('/sections');
+        setSections(sectionsData.sections);
       } catch (error) {
         console.error('Error fetching sections:', error);
       }

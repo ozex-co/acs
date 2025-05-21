@@ -5,6 +5,7 @@ import Button from '../components/Button'
 import { FaUser, FaEnvelope, FaPhone, FaCalendarAlt, FaClock, FaCheckCircle } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { ar } from 'date-fns/locale'
+import { api } from '../utils/api'
 
 interface ExamResult {
   id: string
@@ -40,11 +41,8 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch('/api/user/profile')
-        const data = await response.json()
-        if (data.success) {
-          setProfile(data.data.user)
-        }
+        const userData = await api.get<{user: UserProfile}>('/user/profile');
+        setProfile(userData.user);
       } catch (error) {
         console.error('Error fetching profile:', error)
       }
@@ -52,11 +50,8 @@ const ProfilePage: React.FC = () => {
 
     const fetchExamResults = async () => {
       try {
-        const response = await fetch('/api/results')
-        const data = await response.json()
-        if (data.success) {
-          setExamResults(data.data.results)
-        }
+        const resultsData = await api.get<{results: ExamResult[]}>('/results');
+        setExamResults(resultsData.results);
       } catch (error) {
         console.error('Error fetching exam results:', error)
       } finally {

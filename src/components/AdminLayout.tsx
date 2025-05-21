@@ -11,12 +11,28 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { isAdminLoggedIn, adminLogout, isLoading } = useAuth()
+  const { isAdminLoggedIn, adminLogout, isLoading, admin } = useAuth()
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  
+  // Add debugging for admin authentication in the layout
+  useEffect(() => {
+    console.log('AdminLayout authentication state:', {
+      isAdminLoggedIn,
+      isLoading,
+      adminData: admin ? {
+        id: admin.id,
+        username: admin.username,
+        roles: admin.roles || [],
+        isAdmin: admin.isAdmin
+      } : null,
+      location: location.pathname
+    });
+  }, [isAdminLoggedIn, isLoading, admin, location.pathname]);
   
   // Check if admin is logged in and redirect if not
   useEffect(() => {
     if (!isLoading && !isAdminLoggedIn) {
+      console.log('Admin not logged in, redirecting to admin login page');
       navigate('/admin/login', { replace: true });
     }
   }, [isAdminLoggedIn, navigate, isLoading])
@@ -31,6 +47,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   }
   
   if (!isAdminLoggedIn) {
+    console.log('Admin not authenticated, not rendering AdminLayout');
     return null
   }
   
@@ -39,6 +56,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   
   // If not an admin path, don't render the layout
   if (!isAdminPath) {
+    console.log('Not an admin path, not rendering AdminLayout');
     return <>{children}</>;
   }
   

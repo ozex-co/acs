@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,6 +25,26 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const { isUserLoggedIn, isAdminLoggedIn, user, admin, hasRole, hasPermission, isLoading } = auth;
 
+  // Add debug logging for protection checks
+  useEffect(() => {
+    if (adminOnly) {
+      console.log(`ProtectedRoute at ${location.pathname} - Admin Only Check:`, {
+        isAdminLoggedIn,
+        admin: admin ? { id: admin.id, username: admin.username, isAdmin: admin.isAdmin } : null,
+        result: isAdminLoggedIn ? 'PASS' : 'FAIL'
+      });
+    }
+    
+    if (requiredRoles?.length) {
+      const hasRequiredRole = requiredRoles.some(role => hasRole(role));
+      console.log(`ProtectedRoute at ${location.pathname} - Role Check:`, {
+        requiredRoles,
+        userRoles: user?.roles || admin?.roles || [],
+        result: hasRequiredRole ? 'PASS' : 'FAIL'
+      });
+    }
+  }, [location.pathname, isAdminLoggedIn, admin, user, adminOnly, requiredRoles, hasRole]);
+
   // Show loading state while authentication check is in progress
   if (isLoading) {
     // Return a loading indicator instead of redirecting
@@ -41,6 +61,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const isLoggedIn = isUserLoggedIn || isAdminLoggedIn;
 
   if (!isLoggedIn) {
+    console.log(`ProtectedRoute at ${location.pathname} - Not logged in, redirecting to login`);
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
@@ -50,6 +71,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Handle admin-only routes (existing logic)
   if (adminOnly && !isAdminLoggedIn) {
+    console.warn(`ProtectedRoute at ${location.pathname} - Admin route access denied for non-admin user`);
     // Redirect to home or an unauthorized page if a non-admin tries to access admin route
     return <Navigate to="/" replace />;
   }
@@ -73,6 +95,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           return <Navigate to="/unauthorized" replace />; // Or "/"
       }
   }
+
+  // Log successful access
+  console.log(`ProtectedRoute at ${location.pathname} - Access granted`);
 
   // If logged in and passes admin/role/permission checks, render the children
   return <>{children}</>;

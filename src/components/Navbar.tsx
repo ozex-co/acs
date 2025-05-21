@@ -11,10 +11,21 @@ const Navbar = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { themeType } = useTheme()
-  const { isUserLoggedIn, isAdminLoggedIn, userLogout, adminLogout, user } = useAuth()
+  const { isUserLoggedIn, isAdminLoggedIn, userLogout, adminLogout, user, admin } = useAuth()
   
   const isAuthenticated = isUserLoggedIn || isAdminLoggedIn
   const isAdmin = isAdminLoggedIn
+
+  // Add a debug log to help identify any issues with admin status
+  useEffect(() => {
+    console.log('Navbar authentication state:', { 
+      isUserLoggedIn, 
+      isAdminLoggedIn, 
+      hasUser: !!user, 
+      hasAdmin: !!admin,
+      adminData: admin ? { id: admin.id, username: admin.username, isAdmin: admin.isAdmin, roles: admin.roles } : null
+    });
+  }, [isUserLoggedIn, isAdminLoggedIn, user, admin]);
   
   const handleLogout = () => {
     if (isAdmin) {
@@ -84,6 +95,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-4 rtl:space-x-reverse">
                   <div className="text-muted text-sm">
                     {user?.fullName && <span>مرحباً، {user.fullName.split(' ')[0]}</span>}
+                    {admin?.username && <span>مرحباً، {admin.username}</span>}
                   </div>
                   <Button 
                     variant="danger"
@@ -147,6 +159,11 @@ const Navbar = () => {
                   {user?.fullName && (
                     <div className="text-muted text-sm mb-4 px-2">
                       مرحباً، {user.fullName.split(' ')[0]}
+                    </div>
+                  )}
+                  {admin?.username && (
+                    <div className="text-muted text-sm mb-4 px-2">
+                      مرحباً، {admin.username}
                     </div>
                   )}
                   

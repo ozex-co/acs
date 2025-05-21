@@ -342,13 +342,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Store token and mark as admin 
       storeAuthToken(token, true);
       
-      // Create a complete admin object with fallbacks
+      // Create a complete admin object with fallbacks, ensuring role is included
       const adminObject: AppAdmin = {
         id: (adminData as any).id || 0,
         username: (adminData as any).username || username,
         email: (adminData as any).email || '',
         token: token,
-        isAdmin: true
+        isAdmin: true,
+        roles: (adminData as any).roles || ['admin'], // Ensure 'admin' role is set as fallback
+        permissions: (adminData as any).permissions || []
       };
       
       // Log the admin object we created

@@ -4,6 +4,7 @@ import logger from './logger';
 import { displayErrorNotification } from './errorHandler';
 import { authContextActions } from '../context/authContextInstance'; // Import shared actions
 import { User, Admin } from '../types/api'; // Ensure User and Admin types are imported
+import { extractTokenFromResponse } from './apiHelpers'; // Import extractTokenFromResponse
 // Import API response types
 import { 
     AuthResponse, 
@@ -856,71 +857,37 @@ export const authApi = {
       // Log the login attempt for debugging (without showing the password)
       console.log(`Admin login attempt for username: ${username}`);
       
-      const response = await apiClient.post(API_ROUTES.ADMIN_LOGIN, { username, password });
-      console.log('Admin login response received:', response.status);
+      // Use our consistent api object instead of apiClient directly
+      const adminData = await api.post<AuthResponse>('/auth/q0z3x-management/login', { username, password });
+      console.log('Admin login response received successfully');
       
-      // Extract the full response data for debugging
-      const responseData = response.data;
-      console.log('Admin login response data structure:', Object.keys(responseData));
+      // Extract token directly from various possible locations for maximum compatibility
+      let token = extractTokenFromResponse(adminData);
       
-      // Extract token directly from various possible locations
-      let token = undefined;
-      
-      // Look in standard locations for token
-      if (responseData.data?.token) {
-        token = responseData.data.token;
-        console.log('Found token in data.token');
-      } else if (responseData.data?.admin?.token) {
-        token = responseData.data.admin.token;
-        console.log('Found token in data.admin.token');
-      } else if (responseData.token) {
-        token = responseData.token;
-        console.log('Found token in root token property');
-      } else if (responseData.admin?.token) {
-        token = responseData.admin.token;
-        console.log('Found token in admin.token');
+      if (!token) {
+        console.log('No token found in admin login response - this is unexpected');
+        console.log('Response data:', JSON.stringify(adminData, null, 2));
+      } else {
+        console.log('Found admin token:', !!token);
       }
       
-      // If no token found but response is successful, check raw response
-      if (!token && responseData.success) {
-        console.log('No token found but login successful, searching deeper...');
-        console.log('Response data:', JSON.stringify(responseData, null, 2));
-      }
-      
-      // Extract full API data
-      const data = extractApiData(response);
-      
-      // If we found a token but it's not in the extracted data, add it
-      if (token && data && !data.token && !data.admin?.token) {
-        if (typeof data === 'object') {
-          data.token = token;
-        }
-      }
-      
-      return { data, error: null };
+      return { 
+        data: adminData as AuthResponse, 
+        error: null 
+      };
     } catch (error: any) {
       console.error('Admin login error details:', error);
       
       // More detailed error handling
       let errorMessage = 'Admin login failed';
       
-      if (error?.response?.data?.message) {
-        // Use the server's error message if available
-        errorMessage = error.response.data.message;
-      } else if (error?.response?.status === 500) {
-        errorMessage = 'Server error occurred. Please try again later.';
-      } else if (error?.response?.status === 401) {
-        errorMessage = 'Invalid username or password';
-      } else if (error?.response?.status === 403) {
-        errorMessage = 'Account is locked or inactive';
-      } else if (error?.message) {
+      if (error?.message) {
         errorMessage = error.message;
       }
       
       return { 
         data: null, 
-        error: errorMessage,
-        status: error?.response?.status
+        error: errorMessage
       };
     }
   },
@@ -938,10 +905,10 @@ export const authApi = {
   // Refresh admin token
   refreshAdminToken: async (): Promise<ApiHandlerResponse<AuthResponse>> => {
     try {
-      const response = await apiClient.post(API_ROUTES.ADMIN_REFRESH_TOKEN);
-      return { data: extractApiData(response), error: null };
-    } catch (error) {
-      return { data: null, error: handleApiError(error, 'Admin token refresh failed') };
+      const refreshData = await api.post<AuthResponse>('/auth/q0z3x-management/refresh');
+      return { data: refreshData, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.message || 'Admin token refresh failed' };
     }
   },
   
@@ -963,15 +930,12 @@ export const authApi = {
   // Admin logout
   adminLogout: async (): Promise<ApiHandlerResponse<null>> => {
     try {
-      // Fetch CSRF token first
-      await fetchCsrfToken();
-      
-      const response = await apiClient.post(API_ROUTES.ADMIN_LOGOUT);
+      await api.post('/auth/q0z3x-management/logout');
       // Clean up stored CSRF token on logout
       localStorage.removeItem(STORAGE.CSRF_TOKEN);
       return { data: null, error: null };
-    } catch (error) {
-      return { data: null, error: handleApiError(error, 'Admin logout failed') };
+    } catch (error: any) {
+      return { data: null, error: error.message || 'Admin logout failed' };
     }
   },
   

@@ -64,9 +64,10 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to backend during development
       '/api': {
-        target: 'https://acs-backend-2bvr.onrender.com', // Updated to production API
+        target: 'https://acs-backend-2bvr.onrender.com',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path, // Keep the path as is
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('Proxy error:', err);
@@ -79,7 +80,9 @@ export default defineConfig({
           });
         }
       }
-    }
+    },
+    // Set the port to match the one expected in your code
+    port: 3000
   },
   // Add build configuration to remove console logs in production
   build: {

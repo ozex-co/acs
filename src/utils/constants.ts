@@ -27,7 +27,7 @@ export const THEME = {
 // API settings
 export const API = {
   // Use environment variable for base URL, fallback to localhost for development
-  BASE_URL: 'http://localhost:5000',
+  BASE_URL: 'https://acs-backend-2bvr.onrender.com',
   TIMEOUT: 20000, // Default API request timeout in ms
   RETRY_ATTEMPTS: 2, // Default retry attempts for failed requests
   // Auth endpoints

@@ -15,7 +15,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.destination === 'fetch' && request.method === 'GET',
+            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
@@ -64,9 +64,9 @@ export default defineConfig({
     proxy: {
       // Proxy API requests to backend during development
       '/api': {
-        target: 'http://localhost:5000', // Your backend server port
+        target: 'https://acs-backend-2bvr.onrender.com', // Updated to production API
         changeOrigin: true,
-        secure: false,
+        secure: true,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('Proxy error:', err);

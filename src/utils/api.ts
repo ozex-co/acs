@@ -26,7 +26,7 @@ const ADMIN_PATH_PREFIX = 'q0z3x-management';
  * API routes configuration
  */
 export const API_ROUTES = {
-  BASE_URL: 'http://localhost:5000/api',
+  BASE_URL: 'https://acs-backend-2bvr.onrender.com/api',
   // Authentication
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',

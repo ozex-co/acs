@@ -86,7 +86,7 @@ const ResultsPage: React.FC = () => {
             <h2 className="text-xl text-red-500 font-bold mb-4">{error}</h2>
             <button 
               onClick={() => window.location.reload()}
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors"
+              className="bg-primary text-text px-4 py-2 rounded-lg hover:bg-primary/80 transition-colors"
             >
               إعادة المحاولة
             </button>
@@ -117,7 +117,7 @@ const ResultsPage: React.FC = () => {
     <div className="min-h-screen bg-bg-dark">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-white mb-6">نتائج الاختبارات</h1>
+        <h1 className="text-2xl font-bold text-text mb-6">نتائج الاختبارات</h1>
         
         <div className="grid grid-cols-1 gap-4">
           {results.map((result) => {
@@ -132,7 +132,7 @@ const ResultsPage: React.FC = () => {
                 className="bg-bg-light rounded-lg p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer"
                 onClick={() => handleViewResult(result.id)}
               >
-                <h2 className="text-xl font-bold text-white mb-2">{result.examTitle || 'اختبار'}</h2>
+                <h2 className="text-xl font-bold text-text mb-2">{result.examTitle || 'اختبار'}</h2>
                 
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center">
@@ -159,12 +159,12 @@ const ResultsPage: React.FC = () => {
 
 // Helper function to get color class based on score percentage
 const getScoreColorClass = (percentage: number): string => {
-  if (percentage >= 90) return 'bg-green-500 text-white';
-  if (percentage >= 80) return 'bg-blue-500 text-white';
-  if (percentage >= 70) return 'bg-blue-400 text-white';
-  if (percentage >= 60) return 'bg-yellow-500 text-white';
-  if (percentage >= 40) return 'bg-orange-500 text-white';
-  return 'bg-red-500 text-white';
+  if (percentage >= 90) return 'bg-green-500 text-text';
+  if (percentage >= 80) return 'bg-blue-500 text-text';
+  if (percentage >= 70) return 'bg-blue-400 text-text';
+  if (percentage >= 60) return 'bg-yellow-500 text-text';
+  if (percentage >= 40) return 'bg-orange-500 text-text';
+  return 'bg-red-500 text-text';
 };
 
 export default ResultsPage; 

@@ -499,7 +499,7 @@ const AdminExamsPage = () => {
   return (
     <AdminLayout title="إدارة الاختبارات">
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">إدارة الاختبارات</h1>
+        <h1 className="text-2xl font-bold text-text">إدارة الاختبارات</h1>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={handleOpenExportModal}>
             <FiDownload className="mr-2" />
@@ -526,7 +526,7 @@ const AdminExamsPage = () => {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full text-white">
+              <table className="w-full text-text">
                 <thead>
                   <tr className="border-b border-gray-700">
                     <th className="p-3 text-left w-10">
@@ -616,7 +616,7 @@ const AdminExamsPage = () => {
       {examToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-bg-dark p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-xl font-semibold text-white mb-4">Confirm Delete</h3>
+            <h3 className="text-xl font-semibold text-text mb-4">Confirm Delete</h3>
             <p className="text-gray-300 mb-6">
               Are you sure you want to delete this exam? This action cannot be undone.
             </p>
@@ -713,7 +713,7 @@ const AdminExamsPage = () => {
                 {examToDelete === exam.id && (
                   <div className="absolute inset-0 bg-bg-dark bg-opacity-90 rounded-lg flex items-center justify-center z-10">
                     <div className="bg-bg-light p-6 rounded-lg max-w-md w-full">
-                      <h3 className="text-xl font-bold text-white mb-4">تأكيد الحذف</h3>
+                      <h3 className="text-xl font-bold text-text mb-4">تأكيد الحذف</h3>
                       <p className="text-gray-400 mb-6">
                         هل أنت متأكد من حذف الاختبار "{exam.title}"؟ هذا الإجراء لا يمكن التراجع عنه.
                       </p>
@@ -740,24 +740,24 @@ const AdminExamsPage = () => {
                 )}
                 
                 <div className="mb-4">
-                  <h2 id={`exam-title-${exam.id}`} className="text-xl font-bold text-white mb-2">{exam.title}</h2>
+                  <h2 id={`exam-title-${exam.id}`} className="text-xl font-bold text-text mb-2">{exam.title}</h2>
                   <p className="text-gray-400">{exam.description}</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div className="bg-bg-dark p-3 rounded-lg">
                     <span className="text-gray-400 block mb-1">عدد الأسئلة</span>
-                    <span className="text-lg font-medium text-white">{exam.questionsCount}</span>
+                    <span className="text-lg font-medium text-text">{exam.questionsCount}</span>
                   </div>
                   
                   <div className="bg-bg-dark p-3 rounded-lg">
                     <span className="text-gray-400 block mb-1">مدة الاختبار</span>
-                    <span className="text-lg font-medium text-white">{exam.duration} دقيقة</span>
+                    <span className="text-lg font-medium text-text">{exam.duration} دقيقة</span>
                   </div>
                   
                   <div className="bg-bg-dark p-3 rounded-lg">
                     <span className="text-gray-400 block mb-1">الفئة العمرية</span>
-                    <span className="text-lg font-medium text-white">
+                    <span className="text-lg font-medium text-text">
                       {exam.minAge} - {exam.maxAge} سنة
                     </span>
                   </div>
@@ -785,7 +785,7 @@ const AdminExamsPage = () => {
           {showBulkUpdateModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
               <div className="bg-bg-light p-6 rounded-lg max-w-md w-full">
-                <h3 className="text-xl font-bold text-white mb-4">
+                <h3 className="text-xl font-bold text-text mb-4">
                   Bulk Update Exams
                 </h3>
                 <p className="text-gray-400 mb-4">
@@ -804,7 +804,7 @@ const AdminExamsPage = () => {
                         onChange={handleBulkUpdateFormChange}
                         className="mr-2 h-4 w-4"
                       />
-                      <label htmlFor="applyToPublic" className="text-white">
+                      <label htmlFor="applyToPublic" className="text-text">
                         Update Public/Private Status
                       </label>
                     </div>
@@ -814,7 +814,7 @@ const AdminExamsPage = () => {
                         name="isPublic"
                         value={bulkUpdateForm.isPublic === undefined ? '' : bulkUpdateForm.isPublic.toString()}
                         onChange={handleBulkUpdateFormChange}
-                        className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-white"
+                        className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-text"
                         disabled={!bulkUpdateForm.applyToPublic}
                       >
                         <option value="">-- Select --</option>
@@ -835,7 +835,7 @@ const AdminExamsPage = () => {
                         onChange={handleBulkUpdateFormChange}
                         className="mr-2 h-4 w-4"
                       />
-                      <label htmlFor="applyToAgeRange" className="text-white">
+                      <label htmlFor="applyToAgeRange" className="text-text">
                         Update Age Range
                       </label>
                     </div>
@@ -850,7 +850,7 @@ const AdminExamsPage = () => {
                             name="minAge"
                             value={bulkUpdateForm.minAge || ''}
                             onChange={handleBulkUpdateFormChange}
-                            className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-white"
+                            className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-text"
                             disabled={!bulkUpdateForm.applyToAgeRange}
                             min="0"
                           />
@@ -864,7 +864,7 @@ const AdminExamsPage = () => {
                             name="maxAge"
                             value={bulkUpdateForm.maxAge || ''}
                             onChange={handleBulkUpdateFormChange}
-                            className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-white"
+                            className="w-full bg-bg-dark border border-gray-600 rounded-lg px-3 py-2 text-text"
                             disabled={!bulkUpdateForm.applyToAgeRange}
                             min="1"
                           />
@@ -901,7 +901,7 @@ const AdminExamsPage = () => {
           {showExportModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
               <div className="bg-bg-light p-6 rounded-lg max-w-md w-full">
-                <h3 className="text-xl font-bold text-white mb-4">
+                <h3 className="text-xl font-bold text-text mb-4">
                   Export Exams
                 </h3>
                 <p className="text-gray-400 mb-4">
@@ -911,7 +911,7 @@ const AdminExamsPage = () => {
                 <div className="space-y-4">
                   {/* Export Format */}
                   <div>
-                    <label className="block text-white mb-2">Export Format</label>
+                    <label className="block text-text mb-2">Export Format</label>
                     <div className="flex gap-4">
                       <label className="inline-flex items-center">
                         <input
@@ -922,7 +922,7 @@ const AdminExamsPage = () => {
                           onChange={handleExportOptionChange}
                           className="mr-2 h-4 w-4"
                         />
-                        <span className="text-white">CSV</span>
+                        <span className="text-text">CSV</span>
                       </label>
                       
                       <label className="inline-flex items-center">
@@ -934,14 +934,14 @@ const AdminExamsPage = () => {
                           onChange={handleExportOptionChange}
                           className="mr-2 h-4 w-4"
                         />
-                        <span className="text-white">PDF</span>
+                        <span className="text-text">PDF</span>
                       </label>
                     </div>
                   </div>
                   
                   {/* Export Scope */}
                   <div>
-                    <label className="block text-white mb-2">Export Scope</label>
+                    <label className="block text-text mb-2">Export Scope</label>
                     <div className="flex gap-4">
                       <label className="inline-flex items-center">
                         <input
@@ -952,7 +952,7 @@ const AdminExamsPage = () => {
                           onChange={handleExportOptionChange}
                           className="mr-2 h-4 w-4"
                         />
-                        <span className="text-white">All Exams ({exams.length})</span>
+                        <span className="text-text">All Exams ({exams.length})</span>
                       </label>
                       
                       <label className="inline-flex items-center">
@@ -964,7 +964,7 @@ const AdminExamsPage = () => {
                           onChange={handleExportOptionChange}
                           className="mr-2 h-4 w-4"
                         />
-                        <span className="text-white">Selected ({selectedExamIds.size})</span>
+                        <span className="text-text">Selected ({selectedExamIds.size})</span>
                       </label>
                     </div>
                   </div>

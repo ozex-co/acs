@@ -194,7 +194,7 @@ const AdminStatsPage: React.FC = () => {
   return (
     <AdminLayout title="Statistics">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Statistics & Analytics</h1>
+        <h1 className="text-2xl font-bold text-text">Statistics & Analytics</h1>
         <p className="text-gray-400 mt-1">View platform performance and user metrics</p>
       </div>
       
@@ -202,22 +202,22 @@ const AdminStatsPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-bg-light rounded-xl p-6 border border-[#5f00ff] shadow-lg shadow-[#5f00ff]/20">
           <h2 className="text-[#5f00ff] text-lg font-semibold mb-2">Total Users</h2>
-          <p className="text-4xl font-bold text-white">{stats.counts?.users || 0}</p>
+          <p className="text-4xl font-bold text-text">{stats.counts?.users || 0}</p>
         </div>
         
         <div className="bg-bg-light rounded-xl p-6 border border-[#00f2ff] shadow-lg shadow-[#00f2ff]/20">
           <h2 className="text-[#00f2ff] text-lg font-semibold mb-2">Total Exams</h2>
-          <p className="text-4xl font-bold text-white">{stats.counts?.exams || 0}</p>
+          <p className="text-4xl font-bold text-text">{stats.counts?.exams || 0}</p>
         </div>
         
         <div className="bg-bg-light rounded-xl p-6 border border-[#22ff88] shadow-lg shadow-[#22ff88]/20">
           <h2 className="text-[#22ff88] text-lg font-semibold mb-2">Submissions</h2>
-          <p className="text-4xl font-bold text-white">{stats.counts?.submissions || 0}</p>
+          <p className="text-4xl font-bold text-text">{stats.counts?.submissions || 0}</p>
         </div>
         
         <div className="bg-bg-light rounded-xl p-6 border border-white/30 shadow-lg">
-          <h2 className="text-white/80 text-lg font-semibold mb-2">Avg. Score</h2>
-          <p className="text-4xl font-bold text-white">{stats.performance?.averageScore || 0}%</p>
+          <h2 className="text-text/80 text-lg font-semibold mb-2">Avg. Score</h2>
+          <p className="text-4xl font-bold text-text">{stats.performance?.averageScore || 0}%</p>
         </div>
       </div>
       
@@ -225,7 +225,7 @@ const AdminStatsPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Age Distribution */}
         <div className="bg-bg-light p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-white mb-4">Age Distribution</h2>
+          <h2 className="text-xl font-semibold text-text mb-4">Age Distribution</h2>
           <div className="h-64">
             <Pie 
               data={ageDistributionData} 
@@ -246,7 +246,7 @@ const AdminStatsPage: React.FC = () => {
         
         {/* Top Exams */}
         <div className="bg-bg-light p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-white mb-4">Top Exams</h2>
+          <h2 className="text-xl font-semibold text-text mb-4">Top Exams</h2>
           <div className="h-64">
             <Bar 
               data={topExamsData} 
@@ -278,13 +278,13 @@ const AdminStatsPage: React.FC = () => {
       {/* User Activity */}
       <div className="bg-bg-light p-6 rounded-lg shadow-md mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-white">User Activity</h2>
+          <h2 className="text-xl font-semibold text-text">User Activity</h2>
           <div className="flex rounded-lg overflow-hidden">
             <button
               onClick={() => setTimeRange('weekly')}
               className={`px-4 py-2 text-sm ${
                 timeRange === 'weekly' 
-                  ? 'bg-[#5f00ff] text-white' 
+                  ? 'bg-[#5f00ff] text-text' 
                   : 'bg-bg-dark text-gray-400 hover:bg-bg-dark/80'
               }`}
             >
@@ -294,7 +294,7 @@ const AdminStatsPage: React.FC = () => {
               onClick={() => setTimeRange('monthly')}
               className={`px-4 py-2 text-sm ${
                 timeRange === 'monthly' 
-                  ? 'bg-[#5f00ff] text-white' 
+                  ? 'bg-[#5f00ff] text-text' 
                   : 'bg-bg-dark text-gray-400 hover:bg-bg-dark/80'
               }`}
             >
@@ -332,14 +332,14 @@ const AdminStatsPage: React.FC = () => {
       
       {/* Performance Metrics */}
       <div className="bg-bg-light p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold text-white mb-4">Performance Overview</h2>
+        <h2 className="text-xl font-semibold text-text mb-4">Performance Overview</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h3 className="text-gray-400 mb-2">Average Score</h3>
             <div className="bg-bg-dark rounded-lg p-4">
               <div className="flex items-end">
-                <span className="text-4xl font-bold text-white">{stats.performance?.averageScore || 0}%</span>
+                <span className="text-4xl font-bold text-text">{stats.performance?.averageScore || 0}%</span>
                 <span className="text-green-500 ml-2 mb-1">
                   {(stats.performance?.averageScore || 0) >= 70 ? '✓ Good' : ''}
                 </span>
@@ -360,7 +360,7 @@ const AdminStatsPage: React.FC = () => {
             <h3 className="text-gray-400 mb-2">Completion Rate</h3>
             <div className="bg-bg-dark rounded-lg p-4">
               <div className="flex items-end">
-                <span className="text-4xl font-bold text-white">{stats.performance?.completionRate || 0}%</span>
+                <span className="text-4xl font-bold text-text">{stats.performance?.completionRate || 0}%</span>
                 <span className={`ml-2 mb-1 ${(stats.performance?.completionRate || 0) >= 80 ? 'text-green-500' : 'text-yellow-500'}`}>
                   {(stats.performance?.completionRate || 0) >= 80 ? '✓ Excellent' : '△ Average'}
                 </span>

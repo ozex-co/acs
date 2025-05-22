@@ -198,7 +198,7 @@ const ResultPage = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">
+        <h1 className="text-3xl font-bold text-text mb-8 text-center">
           نتيجة اختبار {result.examTitle}
         </h1>
         
@@ -213,7 +213,7 @@ const ResultPage = () => {
                 </span>
               </div>
               
-              <h2 className="text-3xl font-bold text-white mb-4">
+              <h2 className="text-3xl font-bold text-text mb-4">
                 تقييمك: <span className={colorClass}>{grade}</span>
               </h2>
               
@@ -225,19 +225,19 @@ const ResultPage = () => {
                 <div className="bg-bg-dark rounded-lg p-4">
                   <span className="material-icons text-primary text-2xl mb-2">timer</span>
                   <p className="text-sm text-gray-400 mb-1">الوقت المستغرق</p>
-                  <p className="text-white text-lg">{formatTime(result.timeSpent)}</p>
+                  <p className="text-text text-lg">{formatTime(result.timeSpent)}</p>
                 </div>
                 
                 <div className="bg-bg-dark rounded-lg p-4">
                   <span className="material-icons text-primary text-2xl mb-2">calendar_today</span>
                   <p className="text-sm text-gray-400 mb-1">تاريخ الاختبار</p>
-                  <p className="text-white text-lg">{result.date}</p>
+                  <p className="text-text text-lg">{result.date}</p>
                 </div>
                 
                 <div className="bg-bg-dark rounded-lg p-4">
                   <span className="material-icons text-primary text-2xl mb-2">error_outline</span>
                   <p className="text-sm text-gray-400 mb-1">الأخطاء</p>
-                  <p className="text-white text-lg">{result.mistakes ?? 0}</p>
+                  <p className="text-text text-lg">{result.mistakes ?? 0}</p>
                 </div>
               </div>
               
@@ -273,7 +273,7 @@ const ResultPage = () => {
             {/* Answer Details Section */}
             {showDetails && result.answers && result.answers.length > 0 && (
               <div className="border-t border-gray-700 p-6">
-                <h3 className="text-xl font-bold text-white mb-6">تفاصيل الإجابات</h3>
+                <h3 className="text-xl font-bold text-text mb-6">تفاصيل الإجابات</h3>
                 
                 <div className="space-y-6">
                   {result.answers.map((answer, index) => (
@@ -289,19 +289,19 @@ const ResultPage = () => {
                         </span>
                         
                         <div className="flex-1">
-                          <p className="text-white text-lg mb-2">
+                          <p className="text-text text-lg mb-2">
                             {index + 1}. {answer.questionText}
                           </p>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                             <div>
                               <p className="text-sm text-gray-400 mb-1">إجابتك:</p>
-                              <p className="text-white">{answer.selectedOptionText || 'لم تجب'}</p>
+                              <p className="text-text">{answer.selectedOptionText || 'لم تجب'}</p>
                             </div>
                             
                             <div>
                               <p className="text-sm text-gray-400 mb-1">الإجابة الصحيحة:</p>
-                              <p className="text-white">{answer.correctOptionText}</p>
+                              <p className="text-text">{answer.correctOptionText}</p>
                             </div>
                           </div>
                         </div>

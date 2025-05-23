@@ -36,8 +36,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   
   // Variant classes using our color palette
   const variantClasses = {
-    primary: 'bg-primary text-text hover:bg-primary/90 focus:ring-primary/50',
-    secondary: 'bg-secondary text-text hover:bg-secondary/90 focus:ring-secondary/50',
+    primary: 'bg-primary text-black hover:bg-primary/90 focus:ring-primary/50',
+    secondary: 'bg-secondary text-black hover:bg-secondary/90 focus:ring-secondary/50',
     accent: 'bg-accent text-text hover:bg-accent/90 focus:ring-accent/50',
     outlined: 'border-2 border-primary text-primary hover:bg-primary/10 focus:ring-primary/30',
     danger: 'bg-error text-text hover:bg-error/90 focus:ring-error/50',

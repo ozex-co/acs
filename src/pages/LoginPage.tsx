@@ -247,7 +247,7 @@ const LoginPage: React.FC = () => {
                 type="submit"
                 variant="primary"
                 fullWidth
-                className="py-3"
+                className="py-3 text-text"
                 disabled={isLoginLoading}
               >
                 {isLoginLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}

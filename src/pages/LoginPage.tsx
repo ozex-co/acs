@@ -175,7 +175,7 @@ const LoginPage: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-md mx-auto" data-aos="fade-up">
-          <h1 className="text-3xl font-bold text-white mb-2 text-center">
+          <h1 className="text-3xl font-bold text-text mb-2 text-center">
             مرحبًا بك في <span className="text-primary">ACS</span>
           </h1>
           <p className="text-gray-400 text-center mb-8">تسجيل الدخول إلى حسابك</p>
@@ -209,7 +209,7 @@ const LoginPage: React.FC = () => {
                         // Clear validation error when user types
                         if (validationError) setValidationError('');
                       }}
-                      className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary"
+                      className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-2 text-text focus:outline-none focus:border-primary"
                       placeholder={rules.example}
                       maxLength={rules.maxLength}
                     />
@@ -238,7 +238,7 @@ const LoginPage: React.FC = () => {
                     // Clear validation error when user types
                     if (validationError) setValidationError('');
                   }}
-                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary"
+                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-2 text-text focus:outline-none focus:border-primary"
                   placeholder="أدخل كلمة المرور"
                 />
               </div>

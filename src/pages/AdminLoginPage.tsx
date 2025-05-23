@@ -79,7 +79,7 @@ const AdminLoginPage = () => {
         <div className="w-full max-w-md" data-aos="fade-up">
           <div className="bg-bg-light p-8 rounded-lg shadow-xl border border-gray-800">
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white mb-2">Admin Login</h1>
+              <h1 className="text-2xl font-bold text-text mb-2">Admin Login</h1>
               <p className="text-gray-400">Enter your credentials to access the admin panel</p>
             </div>
             
@@ -100,7 +100,7 @@ const AdminLoginPage = () => {
                   id="username"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent"
+                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-3 text-text focus:outline-none focus:border-accent"
                   placeholder="Enter your admin username"
                 />
               </div>
@@ -112,7 +112,7 @@ const AdminLoginPage = () => {
                   id="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-accent"
+                  className="w-full bg-bg-dark border border-gray-700 rounded-lg px-4 py-3 text-text focus:outline-none focus:border-accent"
                   placeholder="••••••"
                 />
               </div>

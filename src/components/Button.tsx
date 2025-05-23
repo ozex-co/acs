@@ -36,12 +36,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   
   // Variant classes using our color palette
   const variantClasses = {
-    primary: 'bg-primary text-white hover:bg-primary/90 focus:ring-primary/50',
-    secondary: 'bg-secondary text-white hover:bg-secondary/90 focus:ring-secondary/50',
+    primary: 'bg-primary text-text hover:bg-primary/90 focus:ring-primary/50',
+    secondary: 'bg-secondary text-text hover:bg-secondary/90 focus:ring-secondary/50',
     accent: 'bg-accent text-text hover:bg-accent/90 focus:ring-accent/50',
     outlined: 'border-2 border-primary text-primary hover:bg-primary/10 focus:ring-primary/30',
-    danger: 'bg-error text-white hover:bg-error/90 focus:ring-error/50',
-    success: 'bg-success text-white hover:bg-success/90 focus:ring-success/50'
+    danger: 'bg-error text-text hover:bg-error/90 focus:ring-error/50',
+    success: 'bg-success text-text hover:bg-success/90 focus:ring-success/50'
   }
   
   const widthClass = fullWidth ? 'w-full' : ''
